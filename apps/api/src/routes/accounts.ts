@@ -63,6 +63,24 @@ accountsRoutes.patch("/:id", zValidator("json", upsertSchema.partial()), async (
   return c.json(row);
 });
 
+accountsRoutes.delete("/:id", async (c) => {
+  const id = Number(c.req.param("id"));
+  try {
+    const [row] = await db.delete(account).where(eq(account.id, id)).returning();
+    if (!row) return c.json({ error: "not found" }, 404);
+    return c.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "delete failed";
+    if (/foreign key/i.test(message)) {
+      return c.json(
+        { error: "account has dependent signals or raw data; cannot delete" },
+        409,
+      );
+    }
+    return c.json({ error: message }, 500);
+  }
+});
+
 accountsRoutes.post(
   "/bulk",
   zValidator("json", z.object({ accounts: z.array(upsertSchema) })),
