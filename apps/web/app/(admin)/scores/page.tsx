@@ -1,4 +1,13 @@
 import { api } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Row = {
   accountId: number;
@@ -19,43 +28,47 @@ export default async function ScoresPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Account scores</h1>
-      <table className="w-full text-sm">
-        <thead className="text-xs uppercase tracking-wide text-neutral-500">
-          <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left">
-            <th className="py-2 pr-4">Account</th>
-            <th className="py-2 pr-4">Archetype</th>
-            <th className="py-2 pr-4">Score</th>
-            <th className="py-2 pr-4">Highest tier</th>
-            <th className="py-2 pr-4">Top signals</th>
-            <th className="py-2 pr-4">Last signal</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Account</TableHead>
+            <TableHead>Archetype</TableHead>
+            <TableHead>Score</TableHead>
+            <TableHead>Highest tier</TableHead>
+            <TableHead>Top signals</TableHead>
+            <TableHead>Last signal</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((r) => (
-            <tr key={r.accountId} className="border-b border-neutral-100 dark:border-neutral-900">
-              <td className="py-2 pr-4 font-medium">
+            <TableRow key={r.accountId}>
+              <TableCell className="font-medium">
                 {r.displayName ?? `acct ${r.accountId}`}
-                {r.isFresh && <span className="ml-2 text-xs text-amber-600">FRESH</span>}
-              </td>
-              <td className="py-2 pr-4">{r.archetype ?? "—"}</td>
-              <td className="py-2 pr-4 font-mono">
+                {r.isFresh && (
+                  <Badge variant="warning" className="ml-2">
+                    FRESH
+                  </Badge>
+                )}
+              </TableCell>
+              <TableCell>{r.archetype ?? "—"}</TableCell>
+              <TableCell className="font-mono">
                 {r.signalScore.toFixed(1)}
-                <span className="text-xs text-neutral-500"> ({r.signalsCounted})</span>
-              </td>
-              <td className="py-2 pr-4">{r.highestTier}</td>
-              <td className="py-2 pr-4 text-xs text-neutral-600">
+                <span className="text-xs text-muted-foreground"> ({r.signalsCounted})</span>
+              </TableCell>
+              <TableCell>{r.highestTier}</TableCell>
+              <TableCell className="text-xs text-muted-foreground">
                 {r.topSignals
                   .slice(0, 3)
                   .map((t) => `${t.signalCode}:${t.contribution.toFixed(0)}`)
                   .join(" · ")}
-              </td>
-              <td className="py-2 pr-4 text-xs text-neutral-500">
+              </TableCell>
+              <TableCell className="text-xs text-muted-foreground">
                 {r.lastSignalAt ? new Date(r.lastSignalAt).toLocaleString() : "—"}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

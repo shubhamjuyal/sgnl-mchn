@@ -1,4 +1,12 @@
 import { api } from "@/lib/api";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Entry = {
   code: string;
@@ -23,44 +31,44 @@ export default async function DictionaryPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Signal dictionary</h1>
-      <table className="w-full text-sm">
-        <thead className="text-xs uppercase tracking-wide text-neutral-500">
-          <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left">
-            <th className="py-2 pr-4">Code</th>
-            <th className="py-2 pr-4">Label</th>
-            <th className="py-2 pr-4">Category</th>
-            <th className="py-2 pr-4">Type</th>
-            <th className="py-2 pr-4">Weight</th>
-            <th className="py-2 pr-4">Cap</th>
-            <th className="py-2 pr-4">Example phrases</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Code</TableHead>
+            <TableHead>Label</TableHead>
+            <TableHead>Category</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Weight</TableHead>
+            <TableHead>Cap</TableHead>
+            <TableHead>Example phrases</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((r) => (
-            <tr key={r.code} className="border-b border-neutral-100 dark:border-neutral-900 align-top">
-              <td className="py-2 pr-4 font-mono">{r.code}</td>
-              <td className="py-2 pr-4 font-medium">{r.label}</td>
-              <td className="py-2 pr-4 text-xs">{r.category}</td>
-              <td className="py-2 pr-4 text-xs">{r.type}</td>
-              <td className="py-2 pr-4">
+            <TableRow key={r.code} className="align-top">
+              <TableCell className="font-mono">{r.code}</TableCell>
+              <TableCell className="font-medium">{r.label}</TableCell>
+              <TableCell className="text-xs">{r.category}</TableCell>
+              <TableCell className="text-xs">{r.type}</TableCell>
+              <TableCell>
                 {r.defaultWeight}
-                <span className="text-xs text-neutral-500 ml-1">
+                <span className="text-xs text-muted-foreground ml-1">
                   ({r.weightMin}–{r.weightMax})
                 </span>
-              </td>
-              <td className="py-2 pr-4 text-xs">
+              </TableCell>
+              <TableCell className="text-xs">
                 {r.maxOccurrences != null
                   ? `${r.maxOccurrences}/${r.occurrenceWindowDays ?? "—"}d`
                   : "—"}
-              </td>
-              <td className="py-2 pr-4 text-xs text-neutral-500">
+              </TableCell>
+              <TableCell className="text-xs text-muted-foreground">
                 {r.examplePhrases.slice(0, 4).join(" · ")}
                 {r.examplePhrases.length > 4 && ` …+${r.examplePhrases.length - 4}`}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

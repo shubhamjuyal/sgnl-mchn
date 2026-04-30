@@ -1,4 +1,13 @@
 import { api } from "@/lib/api";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Program = {
   programId: string;
@@ -18,40 +27,36 @@ export default async function ProgramsPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold">Program catalog</h1>
-      <table className="w-full text-sm">
-        <thead className="text-xs uppercase tracking-wide text-neutral-500">
-          <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left">
-            <th className="py-2 pr-4">ID</th>
-            <th className="py-2 pr-4">Name</th>
-            <th className="py-2 pr-4">Status</th>
-            <th className="py-2 pr-4">Archetypes</th>
-            <th className="py-2 pr-4">Trigger signals</th>
-            <th className="py-2 pr-4">Price band</th>
-            <th className="py-2 pr-4">MOQ</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Archetypes</TableHead>
+            <TableHead>Trigger signals</TableHead>
+            <TableHead>Price band</TableHead>
+            <TableHead>MOQ</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {rows.map((p) => (
-            <tr key={p.programId} className="border-b border-neutral-100 dark:border-neutral-900">
-              <td className="py-2 pr-4 font-mono">{p.programId}</td>
-              <td className="py-2 pr-4 font-medium">{p.name}</td>
-              <td className="py-2 pr-4">
-                <span
-                  className={
-                    p.status === "PHASE_1_LIVE" ? "text-emerald-600" : "text-neutral-500"
-                  }
-                >
+            <TableRow key={p.programId}>
+              <TableCell className="font-mono">{p.programId}</TableCell>
+              <TableCell className="font-medium">{p.name}</TableCell>
+              <TableCell>
+                <Badge variant={p.status === "PHASE_1_LIVE" ? "success" : "muted"}>
                   {p.status}
-                </span>
-              </td>
-              <td className="py-2 pr-4 text-xs">{p.targetArchetypes.join(", ")}</td>
-              <td className="py-2 pr-4 text-xs">{p.triggerSignals.join(", ")}</td>
-              <td className="py-2 pr-4 text-xs">{p.priceBand}</td>
-              <td className="py-2 pr-4 text-xs">{p.moq}</td>
-            </tr>
+                </Badge>
+              </TableCell>
+              <TableCell className="text-xs">{p.targetArchetypes.join(", ")}</TableCell>
+              <TableCell className="text-xs">{p.triggerSignals.join(", ")}</TableCell>
+              <TableCell className="text-xs">{p.priceBand}</TableCell>
+              <TableCell className="text-xs">{p.moq}</TableCell>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

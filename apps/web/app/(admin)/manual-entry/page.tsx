@@ -15,7 +15,7 @@ export default async function ManualEntryPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <h1 className="text-2xl font-semibold">Manual signal entry</h1>
-      <p className="text-sm text-neutral-500">
+      <p className="text-sm text-muted-foreground">
         Logs a raw_data row against the chosen account, then runs detection. The signal codes you
         hint at are stored as metadata; detection still phrase-matches the dictionary.
       </p>

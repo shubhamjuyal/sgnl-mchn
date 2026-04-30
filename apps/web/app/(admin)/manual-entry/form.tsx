@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+
 type Account = { id: number; displayName: string; archetype: string | null };
 type SignalDef = { code: string; label: string; category: string };
 
@@ -54,13 +60,14 @@ export function ManualEntryForm({
 
   return (
     <form onSubmit={submit} className="space-y-4">
-      <label className="block">
-        <span className="text-sm font-medium">Account</span>
+      <div className="space-y-1.5">
+        <Label htmlFor="account">Account</Label>
         <select
+          id="account"
           required
           value={accountId}
           onChange={(e) => setAccountId(Number(e.target.value))}
-          className="mt-1 block w-full rounded border border-neutral-300 dark:border-neutral-700 bg-transparent px-2 py-1.5"
+          className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           <option value="">Select an account…</option>
           {accounts.map((a) => (
@@ -69,59 +76,65 @@ export function ManualEntryForm({
             </option>
           ))}
         </select>
-      </label>
+      </div>
 
-      <label className="block">
-        <span className="text-sm font-medium">Content (post caption / comment / description)</span>
-        <textarea
+      <div className="space-y-1.5">
+        <Label htmlFor="content">
+          Content (post caption / comment / description)
+        </Label>
+        <Textarea
+          id="content"
           required
           rows={5}
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          className="mt-1 block w-full rounded border border-neutral-300 dark:border-neutral-700 bg-transparent px-2 py-1.5 font-mono text-sm"
+          className="font-mono"
         />
-      </label>
+      </div>
 
-      <label className="block">
-        <span className="text-sm font-medium">Source URL (optional)</span>
-        <input
+      <div className="space-y-1.5">
+        <Label htmlFor="url">Source URL (optional)</Label>
+        <Input
+          id="url"
           type="url"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
-          className="mt-1 block w-full rounded border border-neutral-300 dark:border-neutral-700 bg-transparent px-2 py-1.5"
         />
-      </label>
+      </div>
 
-      <fieldset>
+      <fieldset className="space-y-2">
         <legend className="text-sm font-medium">Signal code hints (optional)</legend>
-        <div className="mt-1 grid grid-cols-4 gap-1 text-xs">
-          {dictionary.map((d) => (
-            <label key={d.code} className="flex items-center gap-1">
-              <input
-                type="checkbox"
-                checked={hints.includes(d.code)}
-                onChange={(e) =>
-                  setHints((h) =>
-                    e.target.checked ? [...h, d.code] : h.filter((c) => c !== d.code),
-                  )
-                }
-              />
-              <span className="font-mono">{d.code}</span>
-            </label>
-          ))}
+        <div className="grid grid-cols-4 gap-x-4 gap-y-2 text-sm">
+          {dictionary.map((d) => {
+            const id = `hint-${d.code}`;
+            return (
+              <div key={d.code} className="flex items-center gap-2">
+                <Checkbox
+                  id={id}
+                  checked={hints.includes(d.code)}
+                  onCheckedChange={(checked) =>
+                    setHints((h) =>
+                      checked === true
+                        ? [...h, d.code]
+                        : h.filter((c) => c !== d.code),
+                    )
+                  }
+                />
+                <Label htmlFor={id} className="font-mono cursor-pointer">
+                  {d.code}
+                </Label>
+              </div>
+            );
+          })}
         </div>
       </fieldset>
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="px-4 py-1.5 rounded bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={submitting}>
         {submitting ? "Submitting…" : "Log signal"}
-      </button>
+      </Button>
 
-      {result && <p className="text-sm text-emerald-600">{result}</p>}
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {result && <p className="text-sm text-emerald-400">{result}</p>}
+      {error && <p className="text-sm text-red-400">{error}</p>}
     </form>
   );
 }
