@@ -216,3 +216,23 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Node / pnpm / Next.js
+node_modules/
+.next/
+.turbo/
+.pnpm-store/
+out/
+build/
+dist/
+*.tsbuildinfo
+.DS_Store
+
+# Local data
+var/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+

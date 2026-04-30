@@ -1,0 +1,24 @@
+FROM node:22-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+WORKDIR /app
+
+FROM base AS deps
+COPY package.json pnpm-workspace.yaml turbo.json tsconfig.base.json ./
+COPY apps/api/package.json apps/api/
+COPY packages/db/package.json packages/db/
+COPY packages/bus/package.json packages/bus/
+COPY packages/blob/package.json packages/blob/
+COPY packages/config-defaults/package.json packages/config-defaults/
+RUN pnpm install --frozen-lockfile=false
+
+FROM deps AS build
+COPY . .
+RUN pnpm --filter @sgnl/api build
+
+FROM node:22-alpine AS runtime
+WORKDIR /app
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate
+COPY --from=build /app /app
+ENV NODE_ENV=production
+EXPOSE 3001
+CMD ["pnpm", "--filter", "@sgnl/api", "start"]

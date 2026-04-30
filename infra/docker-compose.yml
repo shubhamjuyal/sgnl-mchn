@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sgnl
+      POSTGRES_PASSWORD: sgnl
+      POSTGRES_DB: sgnl
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sgnl"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://sgnl:sgnl@postgres:5432/sgnl
+      API_PORT: "3001"
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+
+  web:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.web
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      API_BASE_URL: http://api:3001
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  workers:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.workers
+    restart: unless-stopped
+    environment:
+      WORKERS_DATABASE_URL: postgres://sgnl:sgnl@postgres:5432/sgnl
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - blob-data:/app/var/blobs
+
+volumes:
+  pg-data:
+  blob-data:
