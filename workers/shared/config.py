@@ -14,6 +14,8 @@ class Config:
     openai_api_key: str | None
     openai_detection_model: str
     log_level: str
+    apify_token: str | None
+    apify_instagram_actor_id: str
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -29,6 +31,10 @@ class Config:
                 "OPENAI_DETECTION_MODEL", "gpt-4o-mini"
             ),
             log_level=os.environ.get("LOG_LEVEL", "info"),
+            apify_token=os.environ.get("APIFY_TOKEN") or None,
+            apify_instagram_actor_id=os.environ.get(
+                "APIFY_INSTAGRAM_ACTOR_ID", "apify/instagram-scraper"
+            ),
         )
 
 

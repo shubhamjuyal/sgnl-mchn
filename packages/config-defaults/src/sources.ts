@@ -28,7 +28,7 @@ export const SOURCES: SourceDef[] = [
     signalJustification:
       "Visual trend proof — what vetted accounts are posting. Corroborates other sources.",
     limitations: "Cannot show search intent. Engagement can be gamed. No purchase confirmation.",
-    status: "PENDING", // turn ACTIVE once Apify token configured
+    status: "ACTIVE",
     cronExpression: "0 4 * * 1", // Monday 04:00
   },
   {
