@@ -16,6 +16,8 @@ class Config:
     log_level: str
     apify_token: str | None
     apify_instagram_actor_id: str
+    playwright_timeout_ms: int
+    playwright_nav_selectors: str
 
     @classmethod
     def from_env(cls) -> "Config":
@@ -34,6 +36,11 @@ class Config:
             apify_token=os.environ.get("APIFY_TOKEN") or None,
             apify_instagram_actor_id=os.environ.get(
                 "APIFY_INSTAGRAM_ACTOR_ID", "apify/instagram-scraper"
+            ),
+            playwright_timeout_ms=int(os.environ.get("PLAYWRIGHT_TIMEOUT_MS", "30000")),
+            playwright_nav_selectors=os.environ.get(
+                "PLAYWRIGHT_NAV_SELECTORS",
+                "nav a, header a, [role='navigation'] a",
             ),
         )
 

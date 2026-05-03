@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY workers /app/workers
 RUN pip install --no-cache-dir /app/workers
+RUN python -m playwright install --with-deps chromium
 
 WORKDIR /app/workers
 ENV PYTHONUNBUFFERED=1
