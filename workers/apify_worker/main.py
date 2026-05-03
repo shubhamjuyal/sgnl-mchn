@@ -110,7 +110,7 @@ def _touch_source(source_id: int) -> None:
 
 def handle_scrape_instagram(payload: dict[str, Any]) -> None:
     if not CONFIG.apify_token:
-        log.info("apify.skip", reason="APIFY_TOKEN not configured", payload=payload)
+        log.warning("apify.skip", reason="APIFY_TOKEN not configured", payload=payload)
         return
 
     source_id = int(payload["sourceId"])

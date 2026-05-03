@@ -8,6 +8,8 @@ from scoring.main import handle_score_signal
 from scoring.aggregator import handle_aggregate
 from scoring.tier import handle_tier
 from routing.main import handle_route
+from apify_worker.main import handle_scrape_instagram
+from playwright_worker.main import handle_scrape_website
 
 
 def main() -> None:
@@ -18,6 +20,8 @@ def main() -> None:
             "aggregate_account": handle_aggregate,
             "tier": handle_tier,
             "route": handle_route,
+            "scrape.instagram": handle_scrape_instagram,
+            "scrape.website": handle_scrape_website,
         }
     )
 

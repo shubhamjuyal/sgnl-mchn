@@ -5,16 +5,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY workers/pyproject.toml /app/workers/pyproject.toml
-RUN pip install --no-cache-dir \
-    "psycopg[binary]>=3.2" \
-    "pydantic>=2.9" \
-    "structlog>=24.4" \
-    "python-dotenv>=1.0" \
-    "anthropic>=0.40" \
-    "httpx>=0.27"
-
 COPY workers /app/workers
+RUN pip install --no-cache-dir /app/workers
+
 WORKDIR /app/workers
 ENV PYTHONUNBUFFERED=1
 CMD ["python", "-m", "run_all"]

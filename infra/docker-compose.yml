@@ -52,11 +52,27 @@ services:
     environment:
       WORKERS_DATABASE_URL: postgres://sgnl:sgnl@postgres:5432/sgnl
       LOG_LEVEL: info
+      APIFY_TOKEN: ${APIFY_TOKEN:-}
+      APIFY_INSTAGRAM_ACTOR_ID: ${APIFY_INSTAGRAM_ACTOR_ID:-apify/instagram-scraper}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy
     volumes:
       - blob-data:/app/var/blobs
+
+  scheduler:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.workers
+    restart: unless-stopped
+    environment:
+      WORKERS_DATABASE_URL: postgres://sgnl:sgnl@postgres:5432/sgnl
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["python", "-m", "run_scheduler"]
 
 volumes:
   pg-data:
