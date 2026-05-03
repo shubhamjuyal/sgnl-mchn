@@ -1,7 +1,0 @@
-{
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "echo 'skip build — @vercel/node compiles api/*.ts directly'",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
-  ]
-}
