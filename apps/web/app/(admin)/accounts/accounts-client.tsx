@@ -15,6 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DesktopOnly,
+  MobileCard,
+  MobileCardEmpty,
+  MobileCardField,
+  MobileCardList,
+} from "@/components/ui/mobile-card";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
@@ -192,60 +199,109 @@ export function AccountsClient({
         </div>
       )}
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Archetype</TableHead>
-            <TableHead>Tier</TableHead>
-            <TableHead>Geo</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Handles</TableHead>
-            <TableHead className="w-32 text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {accounts.map((a) => (
-            <TableRow key={a.id}>
-              <TableCell className="font-medium">{a.displayName}</TableCell>
-              <TableCell>{a.archetype ?? "—"}</TableCell>
-              <TableCell>{a.followerTier ?? "—"}</TableCell>
-              <TableCell>{a.geographicMarket}</TableCell>
-              <TableCell>{a.priceSegment ?? "—"}</TableCell>
-              <TableCell>{a.accountStatus}</TableCell>
-              <TableCell className="text-xs font-mono text-muted-foreground">
-                {Object.entries(a.handles)
-                  .filter(([, v]) => v)
-                  .map(([k, v]) => `${k}:${v}`)
-                  .join(" · ")}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="inline-flex gap-1">
-                  <Button size="sm" variant="ghost" onClick={() => setEditing(a)}>
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-red-400 hover:text-red-300"
-                    onClick={() => setConfirmDelete(a)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-          {accounts.length === 0 && (
+      <DesktopOnly>
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                No accounts. Create one to get started.
-              </TableCell>
+              <TableHead>Name</TableHead>
+              <TableHead>Archetype</TableHead>
+              <TableHead>Tier</TableHead>
+              <TableHead>Geo</TableHead>
+              <TableHead>Price</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Handles</TableHead>
+              <TableHead className="w-32 text-right">Actions</TableHead>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {accounts.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell className="font-medium">{a.displayName}</TableCell>
+                <TableCell>{a.archetype ?? "—"}</TableCell>
+                <TableCell>{a.followerTier ?? "—"}</TableCell>
+                <TableCell>{a.geographicMarket}</TableCell>
+                <TableCell>{a.priceSegment ?? "—"}</TableCell>
+                <TableCell>{a.accountStatus}</TableCell>
+                <TableCell className="text-xs font-mono text-muted-foreground">
+                  {Object.entries(a.handles)
+                    .filter(([, v]) => v)
+                    .map(([k, v]) => `${k}:${v}`)
+                    .join(" · ")}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="inline-flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(a)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => setConfirmDelete(a)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {accounts.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
+                  No accounts. Create one to get started.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </DesktopOnly>
+
+      {accounts.length === 0 ? (
+        <MobileCardEmpty>No accounts. Create one to get started.</MobileCardEmpty>
+      ) : (
+        <MobileCardList>
+          {accounts.map((a) => {
+            const handles = Object.entries(a.handles)
+              .filter(([, v]) => v)
+              .map(([k, v]) => `${k}:${v}`)
+              .join(" · ");
+            return (
+              <MobileCard
+                key={a.id}
+                title={a.displayName}
+                meta={
+                  <span className="text-muted-foreground">{a.accountStatus}</span>
+                }
+                footer={
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(a)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => setConfirmDelete(a)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                }
+              >
+                <MobileCardField label="Archetype">{a.archetype ?? "—"}</MobileCardField>
+                <MobileCardField label="Tier">{a.followerTier ?? "—"}</MobileCardField>
+                <MobileCardField label="Geo">{a.geographicMarket}</MobileCardField>
+                <MobileCardField label="Price">{a.priceSegment ?? "—"}</MobileCardField>
+                {handles && (
+                  <MobileCardField label="Handles">
+                    <span className="font-mono text-muted-foreground">{handles}</span>
+                  </MobileCardField>
+                )}
+              </MobileCard>
+            );
+          })}
+        </MobileCardList>
+      )}
 
       {(creating || editing) && (
         <AccountFormModal

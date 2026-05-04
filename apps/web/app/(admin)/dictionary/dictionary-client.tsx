@@ -15,6 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DesktopOnly,
+  MobileCard,
+  MobileCardEmpty,
+  MobileCardField,
+  MobileCardList,
+} from "@/components/ui/mobile-card";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
@@ -224,67 +231,122 @@ export function DictionaryClient({ initial }: { initial: Entry[] }) {
         </div>
       )}
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Code</TableHead>
-            <TableHead>Label</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Weight</TableHead>
-            <TableHead>Cap</TableHead>
-            <TableHead>Example phrases</TableHead>
-            <TableHead className="w-32 text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rows.map((r) => (
-            <TableRow key={r.code} className="align-top">
-              <TableCell className="font-mono">{r.code}</TableCell>
-              <TableCell className="font-medium">{r.label}</TableCell>
-              <TableCell className="text-xs">{r.category}</TableCell>
-              <TableCell className="text-xs">{r.type}</TableCell>
-              <TableCell>
-                {r.defaultWeight}
-                <span className="text-xs text-muted-foreground ml-1">
-                  ({r.weightMin}–{r.weightMax})
-                </span>
-              </TableCell>
-              <TableCell className="text-xs">
-                {r.maxOccurrences != null
-                  ? `${r.maxOccurrences}/${r.occurrenceWindowDays ?? "—"}d`
-                  : "—"}
-              </TableCell>
-              <TableCell className="text-xs text-muted-foreground">
-                {r.examplePhrases.slice(0, 4).join(" · ")}
-                {r.examplePhrases.length > 4 && ` …+${r.examplePhrases.length - 4}`}
-              </TableCell>
-              <TableCell className="text-right">
-                <div className="inline-flex gap-1">
-                  <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
-                    Edit
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-red-400 hover:text-red-300"
-                    onClick={() => setConfirmDelete(r)}
-                  >
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-          {rows.length === 0 && (
+      <DesktopOnly>
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                No entries.
-              </TableCell>
+              <TableHead>Code</TableHead>
+              <TableHead>Label</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Weight</TableHead>
+              <TableHead>Cap</TableHead>
+              <TableHead>Example phrases</TableHead>
+              <TableHead className="w-32 text-right">Actions</TableHead>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r) => (
+              <TableRow key={r.code} className="align-top">
+                <TableCell className="font-mono">{r.code}</TableCell>
+                <TableCell className="font-medium">{r.label}</TableCell>
+                <TableCell className="text-xs">{r.category}</TableCell>
+                <TableCell className="text-xs">{r.type}</TableCell>
+                <TableCell>
+                  {r.defaultWeight}
+                  <span className="text-xs text-muted-foreground ml-1">
+                    ({r.weightMin}–{r.weightMax})
+                  </span>
+                </TableCell>
+                <TableCell className="text-xs">
+                  {r.maxOccurrences != null
+                    ? `${r.maxOccurrences}/${r.occurrenceWindowDays ?? "—"}d`
+                    : "—"}
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {r.examplePhrases.slice(0, 4).join(" · ")}
+                  {r.examplePhrases.length > 4 && ` …+${r.examplePhrases.length - 4}`}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="inline-flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => setConfirmDelete(r)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
+                  No entries.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </DesktopOnly>
+
+      {rows.length === 0 ? (
+        <MobileCardEmpty>No entries.</MobileCardEmpty>
+      ) : (
+        <MobileCardList>
+          {rows.map((r) => {
+            const phrases =
+              r.examplePhrases.slice(0, 4).join(" · ") +
+              (r.examplePhrases.length > 4 ? ` …+${r.examplePhrases.length - 4}` : "");
+            return (
+              <MobileCard
+                key={r.code}
+                title={r.label}
+                meta={<span className="font-mono text-muted-foreground">{r.code}</span>}
+                footer={
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(r)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => setConfirmDelete(r)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                }
+              >
+                <MobileCardField label="Category">{r.category}</MobileCardField>
+                <MobileCardField label="Type">{r.type}</MobileCardField>
+                <MobileCardField label="Weight">
+                  {r.defaultWeight}
+                  <span className="text-muted-foreground ml-1">
+                    ({r.weightMin}–{r.weightMax})
+                  </span>
+                </MobileCardField>
+                <MobileCardField label="Cap">
+                  {r.maxOccurrences != null
+                    ? `${r.maxOccurrences}/${r.occurrenceWindowDays ?? "—"}d`
+                    : "—"}
+                </MobileCardField>
+                {phrases && (
+                  <MobileCardField label="Examples">
+                    <span className="text-muted-foreground">{phrases}</span>
+                  </MobileCardField>
+                )}
+              </MobileCard>
+            );
+          })}
+        </MobileCardList>
+      )}
 
       {(creating || editing) && (
         <EntryFormModal

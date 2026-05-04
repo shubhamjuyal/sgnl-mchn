@@ -16,6 +16,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DesktopOnly,
+  MobileCard,
+  MobileCardEmpty,
+  MobileCardField,
+  MobileCardList,
+} from "@/components/ui/mobile-card";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001";
@@ -173,35 +180,77 @@ export function ProgramsClient({ initial }: { initial: Program[] }) {
         </div>
       )}
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Archetypes</TableHead>
-            <TableHead>Trigger signals</TableHead>
-            <TableHead>Price band</TableHead>
-            <TableHead>MOQ</TableHead>
-            <TableHead className="w-32 text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <DesktopOnly>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Archetypes</TableHead>
+              <TableHead>Trigger signals</TableHead>
+              <TableHead>Price band</TableHead>
+              <TableHead>MOQ</TableHead>
+              <TableHead className="w-32 text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((p) => (
+              <TableRow key={p.programId}>
+                <TableCell className="font-mono">{p.programId}</TableCell>
+                <TableCell className="font-medium">{p.name}</TableCell>
+                <TableCell>
+                  <Badge variant={p.status === "PHASE_1_LIVE" ? "success" : "muted"}>
+                    {p.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-xs">{p.targetArchetypes.join(", ")}</TableCell>
+                <TableCell className="text-xs">{p.triggerSignals.join(", ")}</TableCell>
+                <TableCell className="text-xs">{p.priceBand}</TableCell>
+                <TableCell className="text-xs">{p.moq}</TableCell>
+                <TableCell className="text-right">
+                  <div className="inline-flex gap-1">
+                    <Button size="sm" variant="ghost" onClick={() => setEditing(p)}>
+                      Edit
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-red-400 hover:text-red-300"
+                      onClick={() => setConfirmDelete(p)}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
+                  No programs.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </DesktopOnly>
+
+      {rows.length === 0 ? (
+        <MobileCardEmpty>No programs.</MobileCardEmpty>
+      ) : (
+        <MobileCardList>
           {rows.map((p) => (
-            <TableRow key={p.programId}>
-              <TableCell className="font-mono">{p.programId}</TableCell>
-              <TableCell className="font-medium">{p.name}</TableCell>
-              <TableCell>
+            <MobileCard
+              key={p.programId}
+              title={p.name}
+              meta={
                 <Badge variant={p.status === "PHASE_1_LIVE" ? "success" : "muted"}>
                   {p.status}
                 </Badge>
-              </TableCell>
-              <TableCell className="text-xs">{p.targetArchetypes.join(", ")}</TableCell>
-              <TableCell className="text-xs">{p.triggerSignals.join(", ")}</TableCell>
-              <TableCell className="text-xs">{p.priceBand}</TableCell>
-              <TableCell className="text-xs">{p.moq}</TableCell>
-              <TableCell className="text-right">
-                <div className="inline-flex gap-1">
+              }
+              footer={
+                <div className="flex gap-1">
                   <Button size="sm" variant="ghost" onClick={() => setEditing(p)}>
                     Edit
                   </Button>
@@ -214,18 +263,23 @@ export function ProgramsClient({ initial }: { initial: Program[] }) {
                     Delete
                   </Button>
                 </div>
-              </TableCell>
-            </TableRow>
+              }
+            >
+              <MobileCardField label="ID">
+                <span className="font-mono">{p.programId}</span>
+              </MobileCardField>
+              <MobileCardField label="Archetypes">
+                {p.targetArchetypes.join(", ") || "—"}
+              </MobileCardField>
+              <MobileCardField label="Triggers">
+                {p.triggerSignals.join(", ") || "—"}
+              </MobileCardField>
+              <MobileCardField label="Price band">{p.priceBand}</MobileCardField>
+              <MobileCardField label="MOQ">{p.moq}</MobileCardField>
+            </MobileCard>
           ))}
-          {rows.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={8} className="text-center text-sm text-muted-foreground">
-                No programs.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+        </MobileCardList>
+      )}
 
       {(creating || editing) && (
         <ProgramFormModal

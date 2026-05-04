@@ -8,6 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DesktopOnly,
+  MobileCard,
+  MobileCardEmpty,
+  MobileCardField,
+  MobileCardList,
+} from "@/components/ui/mobile-card";
 
 type SignalRow = {
   signal: {
@@ -51,26 +58,83 @@ export default async function SignalsPage() {
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Signal ID</TableHead>
-            <TableHead>Code</TableHead>
-            <TableHead>Account</TableHead>
-            <TableHead>Tier</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Sources</TableHead>
-            <TableHead>Evidence</TableHead>
-            <TableHead>Date</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <DesktopOnly>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Signal ID</TableHead>
+              <TableHead>Code</TableHead>
+              <TableHead>Account</TableHead>
+              <TableHead>Tier</TableHead>
+              <TableHead>Score</TableHead>
+              <TableHead>Sources</TableHead>
+              <TableHead>Evidence</TableHead>
+              <TableHead>Date</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((r) => (
+              <TableRow key={r.signal.id}>
+                <TableCell className="font-mono text-xs">{r.signal.signalId}</TableCell>
+                <TableCell className="font-medium">{r.signal.signalCode}</TableCell>
+                <TableCell>{r.accountName ?? `acct ${r.signal.accountId}`}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      r.signal.confidenceTier === "CONFIRMED"
+                        ? "success"
+                        : r.signal.confidenceTier === "VALIDATED"
+                          ? "info"
+                          : "muted"
+                    }
+                  >
+                    {r.signal.confidenceTier}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  {r.signal.scoreContribution.toFixed(1)}
+                  {r.signal.isGuardrailBlocked && (
+                    <span className="ml-2 text-xs text-amber-400">
+                      ({r.signal.guardrailRuleFired})
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell>{r.signal.sourceCount}</TableCell>
+                <TableCell className="max-w-md truncate text-muted-foreground">
+                  {r.signal.rawEvidence}
+                </TableCell>
+                <TableCell className="text-xs text-muted-foreground">
+                  {new Date(r.signal.signalDate).toLocaleString()}
+                </TableCell>
+              </TableRow>
+            ))}
+            {rows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
+                  No signals yet. Try /manual-entry.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </DesktopOnly>
+
+      {rows.length === 0 ? (
+        <MobileCardEmpty>No signals yet. Try /manual-entry.</MobileCardEmpty>
+      ) : (
+        <MobileCardList>
           {rows.map((r) => (
-            <TableRow key={r.signal.id}>
-              <TableCell className="font-mono text-xs">{r.signal.signalId}</TableCell>
-              <TableCell className="font-medium">{r.signal.signalCode}</TableCell>
-              <TableCell>{r.accountName ?? `acct ${r.signal.accountId}`}</TableCell>
-              <TableCell>
+            <MobileCard
+              key={r.signal.id}
+              title={
+                <span>
+                  <span className="font-medium">{r.signal.signalCode}</span>
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                    {r.accountName ?? `acct ${r.signal.accountId}`}
+                  </span>
+                </span>
+              }
+              meta={
                 <Badge
                   variant={
                     r.signal.confidenceTier === "CONFIRMED"
@@ -82,33 +146,34 @@ export default async function SignalsPage() {
                 >
                   {r.signal.confidenceTier}
                 </Badge>
-              </TableCell>
-              <TableCell>
+              }
+            >
+              <MobileCardField label="Signal ID">
+                <span className="font-mono">{r.signal.signalId}</span>
+              </MobileCardField>
+              <MobileCardField label="Score">
                 {r.signal.scoreContribution.toFixed(1)}
                 {r.signal.isGuardrailBlocked && (
-                  <span className="ml-2 text-xs text-amber-400">
+                  <span className="ml-2 text-amber-400">
                     ({r.signal.guardrailRuleFired})
                   </span>
                 )}
-              </TableCell>
-              <TableCell>{r.signal.sourceCount}</TableCell>
-              <TableCell className="max-w-md truncate text-muted-foreground">
-                {r.signal.rawEvidence}
-              </TableCell>
-              <TableCell className="text-xs text-muted-foreground">
-                {new Date(r.signal.signalDate).toLocaleString()}
-              </TableCell>
-            </TableRow>
+              </MobileCardField>
+              <MobileCardField label="Sources">
+                {r.signal.sourceCount}
+              </MobileCardField>
+              <MobileCardField label="Evidence">
+                <span className="text-muted-foreground">{r.signal.rawEvidence}</span>
+              </MobileCardField>
+              <MobileCardField label="Date">
+                <span className="text-muted-foreground">
+                  {new Date(r.signal.signalDate).toLocaleString()}
+                </span>
+              </MobileCardField>
+            </MobileCard>
           ))}
-          {rows.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
-                No signals yet. Try /manual-entry.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+        </MobileCardList>
+      )}
     </div>
   );
 }
