@@ -160,7 +160,7 @@ export function ProgramsClient({ initial }: { initial: Program[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <h1 className="text-2xl font-semibold">Program catalog</h1>
         <Button size="sm" onClick={() => setCreating(true)}>
           New program
@@ -285,16 +285,16 @@ function ProgramFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-2xl rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-2xl rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold">{title}</h2>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="programId">Program ID *</Label>
               <Input
@@ -323,7 +323,7 @@ function ProgramFormModal({
               </select>
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="name">Name *</Label>
               <Input
                 id="name"
@@ -333,7 +333,7 @@ function ProgramFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="targetArchetypes">Target archetypes (comma-separated)</Label>
               <Input
                 id="targetArchetypes"
@@ -344,7 +344,7 @@ function ProgramFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="triggerSignals">Trigger signals (comma-separated)</Label>
               <Input
                 id="triggerSignals"
@@ -376,7 +376,7 @@ function ProgramFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="framing">Framing *</Label>
               <Textarea
                 id="framing"
@@ -387,7 +387,7 @@ function ProgramFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="riskStructure">Risk structure</Label>
               <Textarea
                 id="riskStructure"
@@ -397,7 +397,7 @@ function ProgramFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="notes">Notes</Label>
               <Textarea
                 id="notes"
@@ -436,11 +436,11 @@ function ConfirmModal({
   const [pending, setPending] = useState(false);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-md rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-2 text-lg font-semibold">{title}</h2>

@@ -104,7 +104,7 @@ export function ManualEntryForm({
 
       <fieldset className="space-y-2">
         <legend className="text-sm font-medium">Signal code hints (optional)</legend>
-        <div className="grid grid-cols-4 gap-x-4 gap-y-2 text-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-2 text-sm">
           {dictionary.map((d) => {
             const id = `hint-${d.code}`;
             return (

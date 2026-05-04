@@ -40,9 +40,9 @@ export default async function SignalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <h1 className="text-2xl font-semibold">Signals</h1>
-        <div className="text-sm text-muted-foreground flex gap-4">
+        <div className="text-sm text-muted-foreground flex flex-wrap gap-x-4 gap-y-1">
           <span>Total: {stats.total}</span>
           <span>Candidate: {stats.candidate}</span>
           <span>Validated: {stats.validated}</span>

@@ -211,7 +211,7 @@ export function DictionaryClient({ initial }: { initial: Entry[] }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <h1 className="text-2xl font-semibold">Signal dictionary</h1>
         <Button size="sm" onClick={() => setCreating(true)}>
           New entry
@@ -343,16 +343,16 @@ function EntryFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-2xl rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-2xl rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold">{title}</h2>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <Label htmlFor="code">Code *</Label>
               <Input
@@ -374,7 +374,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="signalName">Signal name *</Label>
               <Input
                 id="signalName"
@@ -386,7 +386,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="label">Label *</Label>
               <Input
                 id="label"
@@ -478,7 +478,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="examplePhrases">Example phrases (one per line)</Label>
               <Textarea
                 id="examplePhrases"
@@ -489,7 +489,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="decayRuleJson">Decay rule (JSON)</Label>
               <Textarea
                 id="decayRuleJson"
@@ -503,7 +503,7 @@ function EntryFormModal({
               </p>
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="guardrailNotes">Guardrail notes</Label>
               <Textarea
                 id="guardrailNotes"
@@ -513,7 +513,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="programRelevance">Program relevance</Label>
               <Input
                 id="programRelevance"
@@ -522,7 +522,7 @@ function EntryFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="rationale">Change rationale *</Label>
               <Textarea
                 id="rationale"
@@ -562,11 +562,11 @@ function DeleteModal({
   const [pending, setPending] = useState(false);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-md rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-2 text-lg font-semibold">Delete {entry.code}?</h2>

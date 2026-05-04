@@ -174,7 +174,7 @@ export function AccountsClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-col gap-2 md:flex-row md:items-baseline md:justify-between">
         <h1 className="text-2xl font-semibold">Accounts</h1>
         <div className="flex items-center gap-4">
           <div className="text-sm text-muted-foreground">
@@ -306,17 +306,17 @@ function AccountFormModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-2xl rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-2xl rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-lg font-semibold">{title}</h2>
         <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5 col-span-2">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="displayName">Display name *</Label>
               <Input
                 id="displayName"
@@ -326,7 +326,7 @@ function AccountFormModal({
               />
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="canonicalUrl">Canonical URL</Label>
               <Input
                 id="canonicalUrl"
@@ -404,7 +404,7 @@ function AccountFormModal({
               </select>
             </div>
 
-            <div className="space-y-1.5 col-span-2">
+            <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="priceSegment">Price segment</Label>
               <Input
                 id="priceSegment"
@@ -417,7 +417,7 @@ function AccountFormModal({
 
           <fieldset className="space-y-2">
             <legend className="text-sm font-medium">Handles</legend>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {HANDLE_KEYS.map((k) => (
                 <div key={k} className="space-y-1.5">
                   <Label htmlFor={`handle-${k}`} className="text-xs uppercase tracking-wide text-muted-foreground">
@@ -471,11 +471,11 @@ function ConfirmModal({
   const [pending, setPending] = useState(false);
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-6"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 md:p-6"
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-md rounded-lg border border-border bg-card p-6 shadow-xl"
+        className="w-full max-w-md rounded-lg border border-border bg-card p-4 md:p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-2 text-lg font-semibold">{title}</h2>

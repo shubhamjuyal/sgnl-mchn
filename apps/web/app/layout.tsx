@@ -6,6 +6,11 @@ export const metadata = {
   description: "Internal radar — Oriental Gem Co",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
