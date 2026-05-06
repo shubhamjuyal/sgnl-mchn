@@ -10,19 +10,34 @@ import { scoresRoutes } from "./routes/scores.js";
 import { routingRoutes } from "./routes/routing.js";
 import { guardrailsRoutes } from "./routes/guardrails.js";
 import { programsRoutes } from "./routes/programs.js";
+import { authRoutes } from "./routes/auth.js";
+import { requireAuth } from "./auth/middleware.js";
 
 export const app = new Hono();
 app.use("*", logger());
-app.use("*", cors());
+
+const webOrigin = process.env.WEB_ORIGIN ?? "http://localhost:3000";
+app.use(
+  "*",
+  cors({
+    origin: webOrigin,
+    credentials: true,
+  }),
+);
 
 app.get("/health", (c) => c.json({ ok: true }));
+app.route("/auth", authRoutes);
 
-app.route("/ingest", ingestRoutes);
-app.route("/sources", sourcesRoutes);
-app.route("/accounts", accountsRoutes);
-app.route("/dictionary", dictionaryRoutes);
-app.route("/signals", signalsRoutes);
-app.route("/scores", scoresRoutes);
-app.route("/routing", routingRoutes);
-app.route("/guardrails", guardrailsRoutes);
-app.route("/programs", programsRoutes);
+const protectedApi = new Hono();
+protectedApi.use("*", requireAuth);
+protectedApi.route("/ingest", ingestRoutes);
+protectedApi.route("/sources", sourcesRoutes);
+protectedApi.route("/accounts", accountsRoutes);
+protectedApi.route("/dictionary", dictionaryRoutes);
+protectedApi.route("/signals", signalsRoutes);
+protectedApi.route("/scores", scoresRoutes);
+protectedApi.route("/routing", routingRoutes);
+protectedApi.route("/guardrails", guardrailsRoutes);
+protectedApi.route("/programs", programsRoutes);
+
+app.route("/", protectedApi);

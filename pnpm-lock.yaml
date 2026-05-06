@@ -21,6 +21,52 @@ importers:
         specifier: ^5.6.3
         version: 5.9.3
 
+  api-server:
+    dependencies:
+      '@hono/node-server':
+        specifier: ^1.13.7
+        version: 1.19.14(hono@4.12.15)
+      '@hono/zod-validator':
+        specifier: ^0.4.1
+        version: 0.4.3(hono@4.12.15)(zod@3.25.76)
+      bcryptjs:
+        specifier: ^3.0.3
+        version: 3.0.3
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+      drizzle-orm:
+        specifier: ^0.36.4
+        version: 0.36.4(@types/react@18.3.28)(postgres@3.4.9)(react@19.2.5)
+      hono:
+        specifier: ^4.6.10
+        version: 4.12.15
+      pino:
+        specifier: ^9.5.0
+        version: 9.14.0
+      postgres:
+        specifier: ^3.4.5
+        version: 3.4.9
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
+    devDependencies:
+      '@types/bcryptjs':
+        specifier: ^3.0.0
+        version: 3.0.0
+      '@types/node':
+        specifier: ^22.9.0
+        version: 22.19.17
+      drizzle-kit:
+        specifier: ^0.28.1
+        version: 0.28.1
+      tsx:
+        specifier: ^4.19.2
+        version: 4.21.0
+      typescript:
+        specifier: ^5.6.3
+        version: 5.9.3
+
   apps/api:
     dependencies:
       '@hono/node-server':
@@ -1037,6 +1083,10 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@types/bcryptjs@3.0.0':
+    resolution: {integrity: sha512-WRZOuCuaz8UcZZE4R5HXTco2goQSI2XxjGY3hbM/xDvwmqFWd4ivooImsMx65OKM6CtNKbnZ5YL+YwAwK7c1dg==}
+    deprecated: This is a stub types definition. bcryptjs provides its own type definitions, so you do not need this installed.
+
   '@types/node@22.19.17':
     resolution: {integrity: sha512-wGdMcf+vPYM6jikpS/qhg6WiqSV/OhG+jeeHT/KlVqxYfD40iYJf9/AE1uQxVWFvU7MipKRkRv8NSHiCGgPr8Q==}
 
@@ -1075,6 +1125,10 @@ packages:
   baseline-browser-mapping@2.10.24:
     resolution: {integrity: sha512-I2NkZOOrj2XuguvWCK6OVh9GavsNjZjK908Rq3mIBK25+GD8vPX5w2WdxVqnQ7xx3SrZJiCiZFu+/Oz50oSYSA==}
     engines: {node: '>=6.0.0'}
+    hasBin: true
+
+  bcryptjs@3.0.3:
+    resolution: {integrity: sha512-GlF5wPWnSa/X5LKM1o0wz0suXIINz1iHRLvTS+sLyi7XPbe5ycmYI3DlZqVGZZtDgl4DmasFg7gOB3JYbphV5g==}
     hasBin: true
 
   binary-extensions@2.3.0:
@@ -2205,6 +2259,10 @@ snapshots:
   '@turbo/windows-arm64@2.9.6':
     optional: true
 
+  '@types/bcryptjs@3.0.0':
+    dependencies:
+      bcryptjs: 3.0.3
+
   '@types/node@22.19.17':
     dependencies:
       undici-types: 6.21.0
@@ -2241,6 +2299,8 @@ snapshots:
       postcss-value-parser: 4.2.0
 
   baseline-browser-mapping@2.10.24: {}
+
+  bcryptjs@3.0.3: {}
 
   binary-extensions@2.3.0: {}
 

@@ -1,19 +1,65 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type NavItem = { href: string; label: string };
+type ShellUser = { id: number; email: string; displayName: string; role: string } | null;
+
+function resolveApiBase(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (fromEnv && fromEnv.length > 0) return fromEnv.replace(/\/$/, "");
+  return "http://localhost:3001";
+}
+
+function UserBlock({ user }: { user: ShellUser }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  if (!user) return null;
+  async function logout() {
+    setBusy(true);
+    try {
+      await fetch(`${resolveApiBase()}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch {}
+    router.replace("/login");
+    router.refresh();
+  }
+  return (
+    <div className="mt-auto pt-4 border-t border-border">
+      <div className="text-xs text-muted-foreground truncate" title={user.email}>
+        {user.displayName}
+      </div>
+      <div className="text-[10px] uppercase tracking-wider text-muted-foreground/70 mb-2">
+        {user.role}
+      </div>
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={busy}
+        onClick={logout}
+        className="w-full justify-start h-8 px-2 font-normal text-sm"
+      >
+        {busy ? "Signing out…" : "Sign out"}
+      </Button>
+    </div>
+  );
+}
 
 export function AdminShell({
   nav,
+  user,
   children,
 }: {
   nav: NavItem[];
+  user: ShellUser;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -103,6 +149,7 @@ export function AdminShell({
       >
         <div className="hidden md:block">{brand}</div>
         {navList}
+        <UserBlock user={user} />
       </aside>
 
       <main className="flex-1 p-4 md:p-8 overflow-x-auto">{children}</main>

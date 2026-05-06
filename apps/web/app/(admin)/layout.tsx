@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 
+import { api } from "@/lib/api";
 import { AdminShell } from "./admin-shell";
 
 const NAV = [
@@ -14,6 +15,13 @@ const NAV = [
   { href: "/routing", label: "Routing" },
 ];
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
-  return <AdminShell nav={NAV}>{children}</AdminShell>;
+type Me = { user: { id: number; email: string; displayName: string; role: string } };
+
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  const me = await api.get<Me>("/auth/me");
+  return (
+    <AdminShell nav={NAV} user={me.user}>
+      {children}
+    </AdminShell>
+  );
 }
