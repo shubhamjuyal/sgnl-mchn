@@ -28,6 +28,13 @@ app.use(
 
 app.get("/health", (c) => c.json({ ok: true }));
 
+app.get("/health/sleep", async (c) => {
+  console.log("[sleep] before");
+  await new Promise((r) => setTimeout(r, 2000));
+  console.log("[sleep] after");
+  return c.json({ ok: true });
+});
+
 app.get("/health/db", async (c) => {
   const start = Date.now();
   const timeoutMs = 8000;

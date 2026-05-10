@@ -56,13 +56,16 @@ authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
 });
 
 authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
+  console.log("[trace] start");
   const { email, password } = c.req.valid("json");
-  const trace: Record<string, unknown> = {};
+  const skipBcrypt = c.req.query("skip_bcrypt") === "1";
+  const trace: Record<string, unknown> = { skipBcrypt };
   const raceTimeout = (ms: number, label: string) =>
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms),
     );
 
+  console.log("[trace] before db");
   const t0 = Date.now();
   let row: { passwordHash: string } | undefined;
   try {
@@ -77,14 +80,21 @@ authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
     row = result[0];
     trace.dbMs = Date.now() - t0;
     trace.userFound = !!row;
+    console.log(`[trace] after db ${trace.dbMs}ms found=${trace.userFound}`);
   } catch (e) {
     trace.dbError = e instanceof Error ? e.message : String(e);
     trace.dbMs = Date.now() - t0;
+    console.log(`[trace] db FAILED: ${trace.dbError}`);
     return c.json({ stage: "db", trace }, 503);
   }
 
   if (!row) return c.json({ stage: "no-user", trace });
+  if (skipBcrypt) {
+    console.log("[trace] skipping bcrypt");
+    return c.json({ stage: "skipped-bcrypt", trace });
+  }
 
+  console.log("[trace] before bcrypt");
   const t1 = Date.now();
   try {
     const ok = await Promise.race([
@@ -93,9 +103,11 @@ authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
     ]);
     trace.bcryptMs = Date.now() - t1;
     trace.bcryptOk = ok;
+    console.log(`[trace] after bcrypt ${trace.bcryptMs}ms ok=${ok}`);
   } catch (e) {
     trace.bcryptError = e instanceof Error ? e.message : String(e);
     trace.bcryptMs = Date.now() - t1;
+    console.log(`[trace] bcrypt FAILED: ${trace.bcryptError}`);
     return c.json({ stage: "bcrypt", trace }, 503);
   }
 
