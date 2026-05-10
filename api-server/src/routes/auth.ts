@@ -55,6 +55,54 @@ authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
   });
 });
 
+authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
+  const { email, password } = c.req.valid("json");
+  const trace: Record<string, unknown> = {};
+  const raceTimeout = (ms: number, label: string) =>
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms),
+    );
+
+  const t0 = Date.now();
+  let row: { passwordHash: string } | undefined;
+  try {
+    const result = (await Promise.race([
+      db
+        .select()
+        .from(user)
+        .where(eq(user.email, email.toLowerCase()))
+        .limit(1),
+      raceTimeout(8000, "db"),
+    ])) as Array<{ passwordHash: string }>;
+    row = result[0];
+    trace.dbMs = Date.now() - t0;
+    trace.userFound = !!row;
+  } catch (e) {
+    trace.dbError = e instanceof Error ? e.message : String(e);
+    trace.dbMs = Date.now() - t0;
+    return c.json({ stage: "db", trace }, 503);
+  }
+
+  if (!row) return c.json({ stage: "no-user", trace });
+
+  const t1 = Date.now();
+  try {
+    const ok = await Promise.race([
+      bcrypt.compare(password, row.passwordHash),
+      raceTimeout(8000, "bcrypt"),
+    ]);
+    trace.bcryptMs = Date.now() - t1;
+    trace.bcryptOk = ok;
+  } catch (e) {
+    trace.bcryptError = e instanceof Error ? e.message : String(e);
+    trace.bcryptMs = Date.now() - t1;
+    return c.json({ stage: "bcrypt", trace }, 503);
+  }
+
+  trace.totalMs = Date.now() - t0;
+  return c.json({ stage: "complete", trace });
+});
+
 authRoutes.get("/me", requireAuth, (c) => {
   return c.json({ user: getUser(c) });
 });

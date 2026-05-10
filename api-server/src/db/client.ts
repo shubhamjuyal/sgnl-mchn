@@ -13,11 +13,19 @@ function init() {
   if (!url) {
     throw new Error("DATABASE_URL must be set");
   }
-  _sql = postgres(url, { max: 1, prepare: false });
+  _sql = postgres(url, {
+    max: 1,
+    prepare: false,
+    connect_timeout: 10,
+    idle_timeout: 20,
+    fetch_types: false,
+    ssl: "require",
+    connection: { application_name: "sgnl-api-vercel" },
+  });
   _db = drizzle(_sql, { schema });
 }
 
-export const sql: Sql = new Proxy({} as Sql, {
+export const sql: Sql = new Proxy(function () {} as unknown as Sql, {
   get(_t, prop, receiver) {
     if (!_sql) init();
     return Reflect.get(_sql as object, prop, receiver);

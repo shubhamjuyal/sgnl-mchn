@@ -12,6 +12,7 @@ import { guardrailsRoutes } from "./routes/guardrails.js";
 import { programsRoutes } from "./routes/programs.js";
 import { authRoutes } from "./routes/auth.js";
 import { requireAuth } from "./auth/middleware.js";
+import { sql } from "./db/index.js";
 
 export const app = new Hono();
 app.use("*", logger());
@@ -26,6 +27,29 @@ app.use(
 );
 
 app.get("/health", (c) => c.json({ ok: true }));
+
+app.get("/health/db", async (c) => {
+  const start = Date.now();
+  const timeoutMs = 8000;
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(
+      () => reject(new Error(`db query timed out after ${timeoutMs}ms`)),
+      timeoutMs,
+    ),
+  );
+  try {
+    await Promise.race([sql`SELECT 1 as ok`, timeout]);
+    return c.json({ ok: true, latencyMs: Date.now() - start });
+  } catch (e: unknown) {
+    const msg = e instanceof Error ? e.message : String(e);
+    const stack = e instanceof Error ? e.stack : undefined;
+    return c.json(
+      { ok: false, error: msg, stack, latencyMs: Date.now() - start },
+      503,
+    );
+  }
+});
+
 app.route("/auth", authRoutes);
 
 const protectedApi = new Hono();

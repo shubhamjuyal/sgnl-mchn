@@ -1,6 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "echo 'skip build — @vercel/node compiles api/*.ts directly'",
+  "functions": {
+    "api/**/*.ts": { "maxDuration": 30 }
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/api" }
   ]
