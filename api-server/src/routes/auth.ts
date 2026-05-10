@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { sign } from "hono/jwt";
 import { setCookie, deleteCookie } from "hono/cookie";
-import { db, user } from "../db/index.js";
+import { db, user, sql } from "../db/index.js";
 import {
   AUTH_COOKIE_NAME,
   AUTH_TTL_SECONDS,
@@ -55,31 +55,47 @@ authRoutes.post("/login", zValidator("json", loginSchema), async (c) => {
   });
 });
 
+authRoutes.get("/ping", (c) => {
+  console.log("[ping] hit");
+  return c.json({ ok: true });
+});
+
 authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
   console.log("[trace] start");
   const { email, password } = c.req.valid("json");
+  const useDrizzle = c.req.query("drizzle") === "1";
   const skipBcrypt = c.req.query("skip_bcrypt") === "1";
-  const trace: Record<string, unknown> = { skipBcrypt };
+  const trace: Record<string, unknown> = { useDrizzle, skipBcrypt };
   const raceTimeout = (ms: number, label: string) =>
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error(`${label} timeout ${ms}ms`)), ms),
     );
 
-  console.log("[trace] before db");
+  console.log(`[trace] before db (drizzle=${useDrizzle})`);
   const t0 = Date.now();
-  let row: { passwordHash: string } | undefined;
+  let passwordHash: string | undefined;
   try {
-    const result = (await Promise.race([
-      db
-        .select()
-        .from(user)
-        .where(eq(user.email, email.toLowerCase()))
-        .limit(1),
-      raceTimeout(8000, "db"),
-    ])) as Array<{ passwordHash: string }>;
-    row = result[0];
+    if (useDrizzle) {
+      const result = (await Promise.race([
+        db
+          .select()
+          .from(user)
+          .where(eq(user.email, email.toLowerCase()))
+          .limit(1),
+        raceTimeout(8000, "db"),
+      ])) as Array<{ passwordHash: string }>;
+      passwordHash = result[0]?.passwordHash;
+    } else {
+      const result = (await Promise.race([
+        sql<
+          { password_hash: string }[]
+        >`SELECT password_hash FROM app_user WHERE email = ${email.toLowerCase()} LIMIT 1`,
+        raceTimeout(8000, "db"),
+      ])) as Array<{ password_hash: string }>;
+      passwordHash = result[0]?.password_hash;
+    }
     trace.dbMs = Date.now() - t0;
-    trace.userFound = !!row;
+    trace.userFound = !!passwordHash;
     console.log(`[trace] after db ${trace.dbMs}ms found=${trace.userFound}`);
   } catch (e) {
     trace.dbError = e instanceof Error ? e.message : String(e);
@@ -88,7 +104,7 @@ authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
     return c.json({ stage: "db", trace }, 503);
   }
 
-  if (!row) return c.json({ stage: "no-user", trace });
+  if (!passwordHash) return c.json({ stage: "no-user", trace });
   if (skipBcrypt) {
     console.log("[trace] skipping bcrypt");
     return c.json({ stage: "skipped-bcrypt", trace });
@@ -98,7 +114,7 @@ authRoutes.post("/trace", zValidator("json", loginSchema), async (c) => {
   const t1 = Date.now();
   try {
     const ok = await Promise.race([
-      bcrypt.compare(password, row.passwordHash),
+      bcrypt.compare(password, passwordHash),
       raceTimeout(8000, "bcrypt"),
     ]);
     trace.bcryptMs = Date.now() - t1;
