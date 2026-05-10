@@ -8,6 +8,7 @@ dependencies = [
   "pydantic>=2.9",
   "structlog>=24.4",
   "python-dotenv>=1.0",
+  "croniter>=6.0",
   "openai>=1.50",
   "playwright>=1.48",
   "apify-client>=1.8",
@@ -18,7 +19,7 @@ dependencies = [
 members = []
 
 [tool.setuptools.packages.find]
-include = ["shared*", "detection*", "scoring*", "routing*", "apify*", "playwright_worker*"]
+include = ["shared*", "detection*", "scoring*", "routing*", "apify*", "playwright_worker*", "scheduler*"]
 
 [build-system]
 requires = ["setuptools>=68"]
