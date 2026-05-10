@@ -5,7 +5,19 @@ export const config = { runtime: "nodejs" };
 
 type VercelReq = IncomingMessage & { body?: unknown };
 
+interface FetchResp {
+  status: number;
+  headers: {
+    forEach(cb: (value: string, key: string) => void): void;
+    getSetCookie?: () => string[];
+  };
+  text(): Promise<string>;
+}
+
 export default async function handler(req: VercelReq, res: ServerResponse) {
+  console.log(
+    `[api-bridge-v2] ${req.method} ${req.url} bodyType=${typeof req.body}`,
+  );
   try {
     const protocol = (req.headers["x-forwarded-proto"] as string) || "https";
     const host = req.headers.host;
@@ -33,7 +45,7 @@ export default async function handler(req: VercelReq, res: ServerResponse) {
     }
 
     const request = new Request(url, { method, headers, body });
-    const response = await app.fetch(request);
+    const response = (await app.fetch(request)) as unknown as FetchResp;
 
     res.statusCode = response.status;
 
@@ -44,7 +56,7 @@ export default async function handler(req: VercelReq, res: ServerResponse) {
     if (setCookies.length > 0) {
       res.setHeader("set-cookie", setCookies);
     }
-    response.headers.forEach((value, key) => {
+    response.headers.forEach((value: string, key: string) => {
       if (key.toLowerCase() === "set-cookie") return;
       res.setHeader(key, value);
     });
