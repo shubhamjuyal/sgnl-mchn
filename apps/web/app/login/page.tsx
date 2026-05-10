@@ -8,12 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-function resolveApiBase(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_API_BASE_URL;
-  if (fromEnv && fromEnv.length > 0) return fromEnv.replace(/\/$/, "");
-  return "http://localhost:3001";
-}
-
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
@@ -29,9 +23,8 @@ function LoginForm() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch(`${resolveApiBase()}/auth/login`, {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
-        credentials: "include",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ email, password }),
       });

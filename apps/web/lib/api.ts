@@ -1,9 +1,10 @@
 function resolveApiBase(): string {
-  const fromEnv = process.env.NEXT_PUBLIC_API_BASE_URL ?? process.env.API_BASE_URL;
+  if (typeof window !== "undefined") return "/api";
+  const fromEnv = process.env.API_BASE_URL ?? process.env.NEXT_PUBLIC_API_BASE_URL;
   if (fromEnv && fromEnv.length > 0) return fromEnv.replace(/\/$/, "");
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "NEXT_PUBLIC_API_BASE_URL must be set in production. Configure it in Vercel project environment variables.",
+      "API_BASE_URL must be set in production. Configure it in Vercel project environment variables.",
     );
   }
   return "http://localhost:3001";
